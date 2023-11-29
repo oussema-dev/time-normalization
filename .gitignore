@@ -1,0 +1,11 @@
+# Ignore all __pycache__ folders
+__pycache__/
+
+# Ignore all files and directories in the 'logs' folder
+logs/*
+
+# Ignore .vscode folder and its contents (added by Vscode)
+.vscode/*
+
+# Ignore .idea folder and its contents (added by PyCharm)
+.idea/*
