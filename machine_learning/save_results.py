@@ -14,6 +14,8 @@ def save_results(
     model_type,
     mean_f1,
     std_f1,
+    mean_accuracy,
+    std_accuracy,
     history,
 ):
     """this function saves the f1 score metric and the train validation loss plot.
@@ -24,6 +26,8 @@ def save_results(
     model_type (str): model type used for the prediction
     mean_f1 (float): mean f1 score calculated during the prediction
     std_f1 (float): standard deviation of the f1 score
+    mean_accuracy (float): mean accuracy calculated during the prediction
+    std_accuracy (float): standard deviation of the accuracy
     history (dict): dictionary recording the train and validation loss during the training epochs
 
     Returns:
@@ -42,6 +46,10 @@ def save_results(
         + str(np.round(mean_f1, 2))
         + "\nf1 score standard deviation: "
         + str(np.round(std_f1, 2))
+        + "\nMean accuracy: "
+        + str(np.round(mean_accuracy, 2))
+        + "\naccuracy standard deviation: "
+        + str(np.round(std_accuracy, 2))
     )
     print(text)
 

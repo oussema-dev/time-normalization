@@ -67,8 +67,10 @@ def main(arguments):
         y_train = to_categorical(y_train)
         y_test = to_categorical(y_test)
 
-        # Initialize an empty list to store the results
-        results = []
+        # Initialize empty lists to store the results
+        results_f1 = []
+        results_accuracy = []
+
         print("Training model...")
         for i in range(10):
             print("Iteration", i + 1)
@@ -90,11 +92,14 @@ def main(arguments):
             y_pred_class = np.argmax(y_pred, axis=1)
 
             report = classification_report(y_test_class, y_pred_class, output_dict=True)
-            results.append(report["weighted avg"]["f1-score"])
+            results_f1.append(report["weighted avg"]["f1-score"])
+            results_accuracy.append(report["accuracy"])
 
-        # Calculate the mean and standard deviation of the f1 score
-        mean_f1 = np.mean(results)
-        std_f1 = np.std(results)
+        # Calculate the mean and standard deviation of the f1 score and accuracy
+        mean_f1 = np.mean(results_f1)
+        std_f1 = np.std(results_f1)
+        mean_accuracy = np.mean(results_accuracy)
+        std_accuracy = np.std(results_accuracy)
 
         save_results(
             arguments.data_type,
@@ -102,6 +107,8 @@ def main(arguments):
             arguments.model_type,
             mean_f1,
             std_f1,
+            mean_accuracy,
+            std_accuracy,
             history,
         )
 
