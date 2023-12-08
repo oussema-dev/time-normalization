@@ -20,5 +20,5 @@ The necessary data files are already provided but if for some reason they get lo
 - The `--normalization_strategy` flag specifies the normalisation approach to be used, it can be set to either `zeropadding` (by default) or `interpolation`
 - The `--model_type` flag specified the modle type to be used during training, it can be set to either `cnn` (by default) or `lstm`
 
-## Uing the colab notebooks (no environment configuration needed)
+## Using the colab notebooks (no environment configuration needed)
 To avoid the environment installation and configuration step, we provide the colab notebooks for each normalization strategy, put the notebooks and the csv files (found in the data folder) on you google drive and make sure to specify the correct path to each of the csv files inside the notebooks. for each notebook, run the cells from top to bottom to obtain the required results
