@@ -1,4 +1,4 @@
-"""This module provides a function to save the model metrics and plots"""
+"""This module provides a function to save the model results"""
 
 import matplotlib.pyplot as plt
 import os
@@ -8,22 +8,22 @@ import numpy as np
 from config import logs_fld
 
 
-def save_accuracy_and_plot(
+def save_results(
     data_type,
     normalization_strategy,
     model_type,
-    mean_accuracy,
-    std_accuracy,
+    mean_f1,
+    std_f1,
     history,
 ):
-    """this function saves the accuracy metric and the train validation loss plot.
+    """this function saves the f1 score metric and the train validation loss plot.
 
     Parameters:
     data_type (str): data type used to train the model
     normalization_strategy (str): normlization strategy used when loading the data
     model_type (str): model type used for the prediction
-    mean_accuracy (float): mean accuracy calculated during the prediction
-    std_accuracy (float): standard deviation of the accuracy
+    mean_f1 (float): mean f1 score calculated during the prediction
+    std_f1 (float): standard deviation of the f1 score
     history (dict): dictionary recording the train and validation loss during the training epochs
 
     Returns:
@@ -38,10 +38,10 @@ def save_accuracy_and_plot(
         + normalization_strategy
         + "\nModel type: "
         + model_type
-        + "\nMean accuracy: "
-        + str(np.round(mean_accuracy, 2))
-        + "\nAccuracy standard deviation: "
-        + str(np.round(std_accuracy, 2))
+        + "\nMean f1 score: "
+        + str(np.round(mean_f1, 2))
+        + "\nf1 score standard deviation: "
+        + str(np.round(std_f1, 2))
     )
     print(text)
 

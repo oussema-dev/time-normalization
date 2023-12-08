@@ -19,7 +19,7 @@ from utils.processing import (
 from utils.normalization import zero_padding, normalize_by_body_mass, interpolate
 from machine_learning.data_split import subject_wise_split
 from machine_learning.models import initiate_model
-from machine_learning.save_metrics_and_plots import save_accuracy_and_plot
+from machine_learning.save_results import save_results
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.seterr(invalid="ignore")
@@ -90,20 +90,18 @@ def main(arguments):
             y_pred_class = np.argmax(y_pred, axis=1)
 
             report = classification_report(y_test_class, y_pred_class, output_dict=True)
-            results.append(report["accuracy"])
+            results.append(report["weighted avg"]["f1-score"])
 
-        # Calculate the mean and standard deviation of the accuracy
-        mean_accuracy = sum(results) / len(results)
-        std_accuracy = (
-            sum((x - mean_accuracy) ** 2 for x in results) / len(results)
-        ) ** 0.5
+        # Calculate the mean and standard deviation of the f1 score
+        mean_f1 = np.mean(results)
+        std_f1 = np.std(results)
 
-        save_accuracy_and_plot(
+        save_results(
             arguments.data_type,
             arguments.normalization_strategy,
             arguments.model_type,
-            mean_accuracy,
-            std_accuracy,
+            mean_f1,
+            std_f1,
             history,
         )
 
