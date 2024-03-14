@@ -5,6 +5,7 @@ import urllib.request
 import os
 import shutil
 import pandas as pd
+from scipy.signal import butter, filtfilt
 from config import (
     data_fld,
     logs_fld,
@@ -230,3 +231,80 @@ def drop_extra_columns(ap, ml, v):
     X_data3 = v.iloc[:, 4:-2]
 
     return X_data1, X_data2, X_data3
+
+
+# Function to design Butterworth low-pass filter
+def butter_lowpass(cutoff, fs, order=5):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = butter(order, normal_cutoff, btype="low", analog=False)
+    return b, a
+
+
+# Function to apply bidirectional Butterworth low-pass filter to each trial
+def butter_lowpass_filter(trial, cutoff, fs, order=5):
+    b, a = butter_lowpass(cutoff, fs, order=order)
+    filtered_trial = filtfilt(b, a, trial)
+    return filtered_trial
+
+
+def filter(ap, ml, v):
+    """ This method applies a second order betterworth filter to the data
+
+    Parameters:
+    ap (dataframe): grf antero-posterior data
+    ml (dataframe): grf medio-lateral data
+    v (dataframe): grf vert data
+
+    Returns:
+    concatenated_ap (dataframe): filtered grf antero-posterior data
+    concatenated_ml (dataframe): filtered grf medio-lateral data
+    concatenated_v (dataframe): filtered grf vert data
+    """
+
+    # Define filter parameters
+    cutoff_frequency = 20  # Hz
+    sampling_frequency = 1000  # Hz (replace with your actual sampling frequency)
+    order = 2
+
+    X_data1 = ap.iloc[:, 4:-2]
+    X_data2 = ml.iloc[:, 4:-2]
+    X_data3 = v.iloc[:, 4:-2]
+
+    # Apply filter to each trial in the dataFrames
+
+    # AP
+    filtered_trials = X_data1.apply(
+        lambda trial: butter_lowpass_filter(
+            trial, cutoff_frequency, sampling_frequency, order
+        ),
+        axis=1,
+    )
+    # Create a new DataFrame with the filtered trials
+    filtered_ap = pd.DataFrame(filtered_trials.to_list())
+    filtered_ap.columns = X_data1.columns
+    concatenated_ap = pd.concat([ap.iloc[:, :4], filtered_ap, ap.iloc[:, -2:]], axis=1)
+
+    # ML
+    filtered_trials = X_data2.apply(
+        lambda trial: butter_lowpass_filter(
+            trial, cutoff_frequency, sampling_frequency, order
+        ),
+        axis=1,
+    )
+    filtered_ml = pd.DataFrame(filtered_trials.to_list())
+    filtered_ml.columns = X_data2.columns
+    concatenated_ml = pd.concat([ml.iloc[:, :4], filtered_ml, ml.iloc[:, -2:]], axis=1)
+
+    # V
+    filtered_trials = X_data3.apply(
+        lambda trial: butter_lowpass_filter(
+            trial, cutoff_frequency, sampling_frequency, order
+        ),
+        axis=1,
+    )
+    filtered_v = pd.DataFrame(filtered_trials.to_list())
+    filtered_v.columns = X_data3.columns
+    concatenated_v = pd.concat([v.iloc[:, :4], filtered_v, v.iloc[:, -2:]], axis=1)
+
+    return concatenated_ap, concatenated_ml, concatenated_v

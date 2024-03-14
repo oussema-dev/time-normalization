@@ -1,7 +1,8 @@
 import numpy as np
+import random
 
 
-def subject_wise_split(
+def subject_wise_split_tensor(
     x, y, participant, subject_wise=True, test_size=0.10, random_state=42
 ):
     """Split data into train and test sets via an inter-subject scheme, see:
@@ -60,3 +61,47 @@ def subject_wise_split(
     subject_test = participant[test_index]
 
     return x_train, x_test, y_train, y_test, subject_train, subject_test
+
+
+def subject_wise_split_tabular(df, random_state):
+    """Split data into train and test sets via an inter-subject scheme
+
+    Arguments:
+        df: dataframe, data to be split
+        random_state: int. Seed selector for numpy random number generator.
+    Returns:
+        X_train: nd.array, train set for feature space
+        X_test: nd.array, test set for feature space
+        y_train: nd.array, train set label class
+        y_test: nd.array, test set label class
+    """
+
+    features = [
+        "min_value",
+        "max_value",
+        "mean_value",
+        "std_deviation",
+        "median_value",
+        "75th_percentile",
+        "range",
+    ]
+    participants = df["SUBJECT_ID"].unique()
+    random.seed(random_state)
+    random.shuffle(participants)
+
+    # Assign a certain percentage of participants to the training set and the remaining to the test set
+    train_percentage = 0.8
+    num_train = int(train_percentage * len(participants))
+
+    train_participants = participants[:num_train]
+    test_participants = participants[num_train:]
+
+    # Use the participant list to filter the dataset into training and testing sets
+    train_set = df[df["SUBJECT_ID"].isin(train_participants)]
+    test_set = df[df["SUBJECT_ID"].isin(test_participants)]
+
+    # Split the data into features (X) and labels (y)
+    X_train, y_train = train_set[features], train_set["SEX"]
+    X_test, y_test = test_set[features], test_set["SEX"]
+
+    return X_train, X_test, y_train, y_test
