@@ -83,7 +83,7 @@ def main(arguments):
             # Stack the data to make a tensor
             X = np.stack([X_data1.values, X_data2.values, X_data3.values], axis=-1)
 
-            for i in range(10):
+            for i in range(5):
                 random_state = random.randint(2, 42)
                 # Splitting the data into train and test sets
                 X_train, X_test, y_train, y_test, _, _ = subject_wise_split_tensor(
@@ -132,7 +132,7 @@ def main(arguments):
                 [v.iloc[:, :4], X_data1, X_data2, X_data3, v.iloc[:, -2:]], axis=1
             )
             data = extract_features(df)
-            for i in range(10):
+            for i in range(5):
                 random_state = random.randint(2, 42)
                 X_train, X_test, y_train, y_test = subject_wise_split_tabular(
                     data, random_state

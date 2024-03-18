@@ -249,7 +249,7 @@ def butter_lowpass_filter(trial, cutoff, fs, order=5):
 
 
 def filter(ap, ml, v):
-    """ This method applies a second order betterworth filter to the data
+    """This method applies a second order betterworth filter to the data
 
     Parameters:
     ap (dataframe): grf antero-posterior data
@@ -266,6 +266,10 @@ def filter(ap, ml, v):
     cutoff_frequency = 20  # Hz
     sampling_frequency = 1000  # Hz (replace with your actual sampling frequency)
     order = 2
+
+    ap.fillna(0, inplace=True)
+    ml.fillna(0, inplace=True)
+    v.fillna(0, inplace=True)
 
     X_data1 = ap.iloc[:, 4:-2]
     X_data2 = ml.iloc[:, 4:-2]
