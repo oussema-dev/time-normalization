@@ -27,7 +27,7 @@ from utils.normalization import (
     zero_padding,
     normalize_by_body_mass,
     interpolate,
-    deep_zero_scale,
+    min_max_scale,
 )
 from machine_learning.data_split import (
     subject_wise_split_tensor,
@@ -66,12 +66,14 @@ def main(arguments):
                 ap, ml, v = zero_padding(ap, ml, v)
             if arguments.scaling_strategy == "body_mass":
                 ap, ml, v = normalize_by_body_mass(ap, ml, v)
+            if arguments.normalization_strategy == "interpolation":
+                ap, ml, v = interpolate(ap, ml, v)
+            if arguments.scaling_strategy == "zero_scaling":
+                ap, ml, v = min_max_scale(ap, ml, v)
             if arguments.filter:
                 ap, ml, v = filter(ap, ml, v)
 
         X_data1, X_data2, X_data3 = drop_extra_columns(ap, ml, v)
-        if arguments.normalization_strategy == "interpolation":
-            X_data1, X_data2, X_data3 = interpolate(X_data1, X_data2, X_data3)
 
         # Initialize empty lists to store the results
         results_f1 = []
@@ -94,9 +96,6 @@ def main(arguments):
                     test_size=0.2,
                     random_state=random_state,
                 )
-
-                if arguments.scaling_strategy == "zero_scaling":
-                    X_train, X_test = deep_zero_scale(X_train, X_test)
 
                 # One hot encode labels
                 y_train = to_categorical(y_train)
@@ -157,6 +156,7 @@ def main(arguments):
             arguments.normalization_strategy,
             arguments.model_type,
             arguments.scaling_strategy,
+            arguments.filter,
             mean_f1,
             std_f1,
             mean_accuracy,

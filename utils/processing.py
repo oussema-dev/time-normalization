@@ -264,7 +264,7 @@ def filter(ap, ml, v):
 
     # Define filter parameters
     cutoff_frequency = 20  # Hz
-    sampling_frequency = 1000  # Hz (replace with your actual sampling frequency)
+    sampling_frequency = 1000  # Hz
     order = 2
 
     ap.fillna(0, inplace=True)

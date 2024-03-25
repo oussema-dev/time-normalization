@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from sklearn.preprocessing import MinMaxScaler
 
 
 def zero_padding(ap, ml, v):
@@ -57,6 +58,37 @@ def normalize_by_body_mass(ap, ml, v):
     return ap, ml, v
 
 
+def min_max_scale(ap, ml, v):
+    """This method applices a min-max scaler to the data
+
+    Parameters:
+    ap (dataframe): grf antero-posterior data
+    ml (dataframe): grf medio-lateral data
+    v (dataframe): grf vert data
+
+    Returns:
+    ap (dataframe): scaled grf antero-posterior data
+    ml (dataframe): scaled grf medio-lateral data
+    v (dataframe): scaled grf vert data
+    """
+
+    X_data1 = ap.iloc[:, 4:-2]
+    X_data2 = ml.iloc[:, 4:-2]
+    X_data3 = v.iloc[:, 4:-2]
+
+    scaler = MinMaxScaler()
+
+    scaled_ap = pd.DataFrame(scaler.fit_transform(X_data1), columns=X_data1.columns)
+    scaled_ml = pd.DataFrame(scaler.fit_transform(X_data2), columns=X_data2.columns)
+    scaled_v = pd.DataFrame(scaler.fit_transform(X_data3), columns=X_data3.columns)
+
+    concatenated_ap = pd.concat([ap.iloc[:, :4], scaled_ap, ap.iloc[:, -2:]], axis=1)
+    concatenated_ml = pd.concat([ml.iloc[:, :4], scaled_ml, ml.iloc[:, -2:]], axis=1)
+    concatenated_v = pd.concat([v.iloc[:, :4], scaled_v, v.iloc[:, -2:]], axis=1)
+
+    return concatenated_ap, concatenated_ml, concatenated_v
+
+
 def interpolate_row(row):
     """a method for interpolating a row to 100 values
 
@@ -77,7 +109,7 @@ def interpolate_row(row):
     return interpolated_row
 
 
-def interpolate(X_data1, X_data2, X_data3):
+def interpolate(ap, ml, v):
     """a method for interpolating the data to 100 frames for each row
 
     Parameters:
@@ -90,6 +122,9 @@ def interpolate(X_data1, X_data2, X_data3):
     X_data2 (dataframe): the interpolated second channel
     X_data3 (dataframe): the interpolated third channel
     """
+    X_data1 = ap.iloc[:, 4:-2]
+    X_data2 = ml.iloc[:, 4:-2]
+    X_data3 = v.iloc[:, 4:-2]
 
     # Interpolate data and shrink it to 100 frames
     data_array_1 = X_data1.to_numpy()
@@ -104,29 +139,8 @@ def interpolate(X_data1, X_data2, X_data3):
     X_data2 = pd.DataFrame(interpolated_data_2)
     X_data3 = pd.DataFrame(interpolated_data_3)
 
-    return X_data1, X_data2, X_data3
+    concatenated_ap = pd.concat([ap.iloc[:, :4], X_data1, ap.iloc[:, -2:]], axis=1)
+    concatenated_ml = pd.concat([ml.iloc[:, :4], X_data2, ml.iloc[:, -2:]], axis=1)
+    concatenated_v = pd.concat([v.iloc[:, :4], X_data3, v.iloc[:, -2:]], axis=1)
 
-
-def deep_zero_scale(X_train, X_test):
-    """This method applices a min-max scaler to the data
-
-    Parameters:
-    X_train (dataframe): train data
-    X_test (dataframe): test data
-
-    Returns:
-    X_train_scaled (dataframe): scaled train data
-    X_test_scaled (dataframe): scaled test data
-    """
-    # Reshape the train and test tensors to flatten the last two dimensions
-    X_train_flat = tf.reshape(X_train, (-1, 3))
-
-    # Compute the minimum and maximum values along the flattened training tensor
-    min_vals = tf.reduce_min(X_train_flat, axis=0)
-    max_vals = tf.reduce_max(X_train_flat, axis=0)
-
-    # Perform Min-Max scaling on both train and test tensors
-    X_train_scaled = (X_train - min_vals) / (max_vals - min_vals)
-    X_test_scaled = (X_test - min_vals) / (max_vals - min_vals)
-
-    return X_train_scaled, X_test_scaled
+    return concatenated_ap, concatenated_ml, concatenated_v

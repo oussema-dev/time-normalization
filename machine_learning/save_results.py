@@ -12,6 +12,7 @@ def save_results(
     normalization_strategy,
     model_type,
     scaling_strategy,
+    filter,
     mean_f1,
     std_f1,
     mean_accuracy,
@@ -24,6 +25,7 @@ def save_results(
     normalization_strategy (str): normlization strategy used when loading the data
     model_type (str): model type used for the prediction
     scaling_strategy (str): scaling strategy used for the training data
+    filter (bool): indicates whether a filter is used
     mean_f1 (float): mean f1 score calculated during the prediction
     std_f1 (float): standard deviation of the f1 score
     mean_accuracy (float): mean accuracy calculated during the prediction
@@ -34,6 +36,9 @@ def save_results(
     """
     if data_type == "PRO":
         normalization_strategy = "None"
+    filtering = "No"
+    if filter:
+        filtering = "Yes"
     text = (
         "Data type: "
         + data_type
@@ -43,6 +48,8 @@ def save_results(
         + model_type
         + "\nScaling strategy: "
         + scaling_strategy
+        + "\nFiltering: "
+        + filtering
         + "\nMean f1 score: "
         + str(np.round(mean_f1, 2))
         + "\nf1 score standard deviation: "
