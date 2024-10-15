@@ -1,6 +1,6 @@
 # Time normalization
 
-## Code support to a study investigating the effect of time normalization approaches on machine learning classification performance
+## Code support to a study investigating the effect of time normalization approaches on machine learning classification performance. details about the study can be found in the related [paper](https://doi.org/10.1016/j.jbiomech.2024.112116)
 
 ## Pre-requisites
 
